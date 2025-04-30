@@ -10,7 +10,6 @@ from sklearn.neighbors import NearestNeighbors
 from scipy.optimize import linear_sum_assignment
 import pickle
 
-# ----------------- CONFIG -----------------
 FILENAMES_TRANSFORM = [
     "FlowRepository_FR-FCM-ZZPH_files/Levine_13dim.fcs",
     "FlowRepository_FR-FCM-ZZPH_files/Levine_32dim.fcs",
@@ -23,7 +22,6 @@ FILENAMES_TRANSFORM = [
 OUTPUT_DIR = "benchmark_results_dbscan_auto_full"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# ----------------- HELPER FUNCTIONS -----------------
 def match_clusters(y_true, y_pred):
     contingency = confusion_matrix(y_true, y_pred)
     row_ind, col_ind = linear_sum_assignment(-contingency)
@@ -40,7 +38,6 @@ def estimate_eps(X, k):
     k_distances = np.sort(distances[:, k - 1])
     return np.percentile(k_distances, 90)  # 90th percentile as eps estimate
 
-# ----------------- MAIN SCRIPT -----------------
 summary_rows = []
 
 for input_file in tqdm(FILENAMES_TRANSFORM, desc="Running DBSCAN"):
@@ -51,7 +48,7 @@ for input_file in tqdm(FILENAMES_TRANSFORM, desc="Running DBSCAN"):
         s = FlowCal.io.FCSData(input_file)
         data_array = np.asarray(s)
     except Exception as e:
-        print(f"❌ Failed to load {input_file}: {e}")
+        print(f"Failed to load {input_file}: {e}")
         continue
 
     if "Levine_32dim" in dataset_name:
@@ -71,7 +68,6 @@ for input_file in tqdm(FILENAMES_TRANSFORM, desc="Running DBSCAN"):
     min_samples = 2 * n_features
     eps = estimate_eps(X, k=2 * n_features - 1)
 
-    # Run DBSCAN
     model = DBSCAN(eps=eps, min_samples=min_samples)
     labels = model.fit_predict(X)
 
@@ -79,7 +75,6 @@ for input_file in tqdm(FILENAMES_TRANSFORM, desc="Running DBSCAN"):
     y_true_clean = y_true[labeled_indices].astype(int)
     y_pred_clean = labels[labeled_indices]
 
-    # Compute metrics
     nmi = normalized_mutual_info_score(y_true_clean, y_pred_clean)
     ari = adjusted_rand_score(y_true_clean, y_pred_clean)
     purity = calculate_purity(y_true_clean, y_pred_clean)
@@ -97,7 +92,6 @@ for input_file in tqdm(FILENAMES_TRANSFORM, desc="Running DBSCAN"):
         "f1_score": f1
     }
 
-    # Save results
     output_prefix = f"{dataset_name}_DBSCAN_eps{eps:.2f}_min{min_samples}"
     pd.DataFrame([results]).to_csv(os.path.join(OUTPUT_DIR, f"{output_prefix}.csv"), index=False)
 
@@ -110,7 +104,6 @@ for input_file in tqdm(FILENAMES_TRANSFORM, desc="Running DBSCAN"):
 
     summary_rows.append(results)
 
-# Save combined CSV
 combined_df = pd.DataFrame(summary_rows)
 combined_df.to_csv(os.path.join(OUTPUT_DIR, "combined_dbscan_summary.csv"), index=False)
-print("\n✅ All datasets processed. Results saved to:", OUTPUT_DIR)
+print("\nAll datasets processed. Results saved to:", OUTPUT_DIR)

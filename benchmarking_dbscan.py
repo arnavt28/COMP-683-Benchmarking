@@ -13,7 +13,6 @@ from sklearn.cluster import DBSCAN
 from sklearn.metrics import f1_score, normalized_mutual_info_score, adjusted_rand_score, confusion_matrix
 from scipy.optimize import linear_sum_assignment
 
-# --- Helper functions ---
 
 def match_clusters(y_true, y_pred):
     contingency = confusion_matrix(y_true, y_pred)
@@ -112,14 +111,12 @@ if __name__ == "__main__":
         print(f"Error loading {input_file}: {e}")
         sys.exit(1)
 
-    # Run DBSCAN with specified parameters
     try:
         metrics = benchmark_dbscan(X, y_true_full, eps=eps, min_samples=min_samples)
     except Exception as e:
         print(f"DBSCAN failed on {dataset_name} with eps={eps}, min_samples={min_samples}: {e}")
         sys.exit(1)
 
-    # Save results
     node_specs = get_node_info()
 
     results = {
@@ -136,4 +133,4 @@ if __name__ == "__main__":
     flattened = pd.DataFrame([{**{"dataset": dataset_name, "method": "DBSCAN"}, **metrics, "eps": eps, "min_samples": min_samples}])
     flattened.to_csv(os.path.join(output_dir, f"{output_prefix}.csv"), index=False)
 
-    print(f"✅ Finished DBSCAN benchmarking {dataset_name} with eps={eps}, min_samples={min_samples}.")
+    print(f"Finished DBSCAN benchmarking {dataset_name} with eps={eps}, min_samples={min_samples}.")
