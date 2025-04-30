@@ -1,0 +1,2 @@
+dataset,method,eps,min_samples,nmi,ari,purity,f1_score
+Mosmann_rare,DBSCAN,4693.69966840049,44,3.996253394440384e-06,0.0001299680214882456,0.9997250668415477,0.0

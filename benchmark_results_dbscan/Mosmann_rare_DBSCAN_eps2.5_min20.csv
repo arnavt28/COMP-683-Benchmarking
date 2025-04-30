@@ -1,0 +1,4 @@
+dataset,method,runtime,memory_usage_MB,nmi,ari,purity,f1_score,confusion_matrix,eps,min_samples
+Mosmann_rare,DBSCAN,1005.687399148941,53.76953125,0.0,0.0,0.9997250668415477,0.0,"[[     0      0      0]
+ [396351      0      0]
+ [   109      0      0]]",2.5,20
